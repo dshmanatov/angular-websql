@@ -52,8 +52,13 @@ angular.module("angular-websql", []).factory("$webSql", [
                 return this;
               },
               del: function(b, c, callback) {
-                var d = "DELETE FROM `{tableName}` WHERE {where}; ";
+                var d = "DELETE FROM `{tableName}`";
                 var a = this.whereClause(c);
+
+                if (a) {
+                    d += " WHERE {where}; ";
+                }
+
                 this.executeQuery(this.replace(d, {
                   "{tableName}": b,
                   "{where}": a
@@ -80,6 +85,7 @@ angular.module("angular-websql", []).factory("$webSql", [
                 for (var c in b) {
                   a += (typeof b[c] === "object") ? (typeof b[c]["union"] === "undefined") ? (typeof b[c]["value"] === "string" && b[c]["value"].match(/NULL/ig)) ? "`" + c + "` " + b[c]["value"] : "`" + c + "` " + b[c]["operator"] + " '" + b[c]["value"] + "'" : (typeof b[c]["value"] === "string" && b[c]["value"].match(/NULL/ig)) ? "`" + c + "` " + b[c]["value"] + " " + b[c]["union"] + " " : "`" + c + "` " + b[c]["operator"] + " '" + b[c]["value"] + "' " + b[c]["union"] + " " : (typeof b[c] === "string" && b[c].match(/NULL/ig)) ? "`" + c + "` " + b[c] : "`" + c + "`='" + b[c] + "'"
                 }
+				console.log("Returning", a);
                 return a;
               },
               replace: function(a, c, callback) {
