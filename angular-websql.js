@@ -69,8 +69,10 @@ angular.module("angular-websql", []).factory("$webSql", [
                 }), callback);
                 return this;
               },
-              selectAll: function(a, callback) {
-                this.executeQuery("SELECT * FROM `" + a + "`; ", callback);
+              selectAll: function(a, orderBy, callback) {
+                var cb = orderBy ? callback : orderBy;
+
+                this.executeQuery("SELECT * FROM `" + a + "` " + (orderBy ? " ORDER BY " + orderBy : "") + "; ", cb);
                 return this;
               },
               whereClause: function(b, callback) {
