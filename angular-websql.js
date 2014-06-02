@@ -35,6 +35,43 @@
                                     callback(tx);
                                 });
                             },
+                            query: function (query, fields, firstOnly) {
+                                console.log("HERE", query, fields);
+                                var deferred = $q.defer();
+
+                                db.transaction(function (tx) {
+                                    tx.executeSql(query, fields, function (tx, results) {
+                                        var rows = [],
+                                            i;
+
+                                        if (firstOnly) {
+                                            rows = results.rows.item(0);
+                                        } else {
+                                            for (i = 0; i < results.rows.length; i++) {
+                                                rows.push(results.rows.item(i));
+                                            }
+                                        }
+
+                                        console.log("INE", rows);
+
+                                        deferred.resolve(rows);
+                                    }, function (tx, error) {
+                                        console.log("Rejecting", error);
+                                        deferred.reject(error);
+                                    });
+                                });
+
+                                return deferred.promise;
+                            },
+                            queryFirst: function (query, fields) {
+                                return this.query(query, fields, true);
+                            },
+                            queryFirstCell: function (query, fields) {
+                                return this.queryFirst(query, fields, true)
+                                    .then(function (row) {
+                                        return $q.when(_.values(row)[0]);
+                                    });
+                            },
                             queryArray: function (tableName, where, addToQuery, callback) {
                                 var deferred = $q.defer();
 
